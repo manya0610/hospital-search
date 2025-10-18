@@ -24,9 +24,11 @@ class NoteUpdate(BaseModel):
     text: str
     embedding: list[float] = Field(required=False)
 
+
 class NoteSearch(BaseModel):
     model_config = ConfigDict(from_attributes=True, extra="forbid")
     text: str
+
 
 class NoteSearchPublic(BaseModel):
     model_config = ConfigDict(from_attributes=True, extra="ignore")

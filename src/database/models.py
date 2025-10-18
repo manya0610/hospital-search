@@ -42,10 +42,11 @@ class Note(Base):
         onupdate=datetime.now(timezone.utc),
     )
 
+
 notes_embedding_idx = Index(
-"notes_embedding_idx",  # index name
-Note.embedding,
-postgresql_using="ivfflat",
-postgresql_ops={"embedding": "vector_cosine_ops"},
-postgresql_with={"lists": 100},  # tuning parameter
+    "notes_embedding_idx",  # index name
+    Note.embedding,
+    postgresql_using="ivfflat",
+    postgresql_ops={"embedding": "vector_cosine_ops"},
+    postgresql_with={"lists": 100},  # tuning parameter
 )

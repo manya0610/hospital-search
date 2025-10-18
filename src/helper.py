@@ -7,7 +7,6 @@ model = SentenceTransformer("multi-qa-MiniLM-L6-cos-v1")
 text = "The quick brown fox jumps over the lazy dog."
 
 
-def get_embeddings(text:str):
+def get_embeddings(text: str):
     # Create embedding vector
     return model.encode(text, normalize_embeddings=True)
-
