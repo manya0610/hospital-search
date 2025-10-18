@@ -30,7 +30,9 @@ class Note(Base):
     note_id: Mapped[int] = mapped_column(
         primary_key=True, index=True, autoincrement=True
     )
-    patient_id: Mapped[int] = mapped_column(ForeignKey("patients.patient_id"))
+    patient_id: Mapped[int] = mapped_column(
+        ForeignKey("patients.patient_id", ondelete="CASCADE"), index=True
+    )
     text: Mapped[str] = mapped_column(nullable=False)
     embedding: Mapped[list[float]] = mapped_column(Vector(384))  # size must match model
     created_at: Mapped[datetime] = mapped_column(
