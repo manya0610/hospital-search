@@ -15,6 +15,7 @@ from src.schemas.note_schema import (
     NoteSearchPublic,
     NoteUpdate,
 )
+from src.services import note_service
 
 note_router = APIRouter(prefix="/note")
 
@@ -25,8 +26,7 @@ async def create_note(
     db: AsyncSession = Depends(get_db),
 ) -> NotePublic:
     try:
-        note: Note = await note_repo.create_note(db, note)
-        return note
+        return await note_service.create_note(db, note)
     except Exception as e:
         raise HTTPException(status_code=500) from e
 
@@ -62,7 +62,7 @@ async def update_note(
     db: AsyncSession = Depends(get_db),
 ) -> NotePublic:
     try:
-        note: Note = await note_repo.update_note(db, note_id, note)
+        note: Note = await note_service.update_note(db, note_id, note)
         return note
     except NotFoundError:
         raise HTTPException(status_code=404, detail="note not found") from None
@@ -89,14 +89,7 @@ async def search(
     search_note: NoteSearch, db: AsyncSession = Depends(get_db)
 ) -> list[NoteSearchPublic]:
     try:
-        notes: list[tuple[Note, float]] = await note_repo.search_notes(
-            db, search_note.text
-        )
-
-        return [
-            NoteSearchPublic(**note.__dict__, similarity_score=similarity_score)
-            for (note, similarity_score) in notes
-        ]
+        return await note_service.search_notes_by_text(db, search_note)
     except NotFoundError:
         raise HTTPException(status_code=404, detail="note not found") from None
     except Exception as e:

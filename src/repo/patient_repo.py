@@ -12,15 +12,15 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-async def create_patient(session: AsyncSession, data: PatientCreate) -> Patient:
+async def create_patient(session: AsyncSession, patient: PatientCreate) -> Patient:
     try:
-        query = insert(Patient).values(data.model_dump()).returning(Patient)
+        query = insert(Patient).values(patient.model_dump()).returning(Patient)
         patient: Patient = await session.scalar(query)
         await session.commit()
         return patient
     except Exception as e:
         await session.rollback()
-        logger.exception("Error creating patient=%s", data, stack_info=True)
+        logger.exception("Error creating patient=%s", patient, stack_info=True)
         raise DatabaseError from e
 
 
@@ -63,13 +63,13 @@ async def list_patients(
 
 
 async def update_patient(
-    session: AsyncSession, patient_id: int, data: PatientUpdate
+    session: AsyncSession, patient_id: int, patient: PatientUpdate
 ) -> Patient:
     try:
         query = (
             update(Patient)
             .where(Patient.patient_id == patient_id)
-            .values(**data.model_dump())
+            .values(**patient.model_dump())
             .returning(Patient)
         )
         patient: Patient = await session.scalar(query)
@@ -85,7 +85,7 @@ async def update_patient(
         logger.exception(
             "Error updating patient with id=%s, data=%s",
             patient_id,
-            data,
+            patient,
             stack_info=True,
         )
         raise DatabaseError from e

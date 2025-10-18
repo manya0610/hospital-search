@@ -6,8 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.database import get_db
 from src.database.models import Patient
 from src.exceptions.db_exceptions import NotFoundError
-from src.repo import patient_repo
 from src.schemas.patient_schema import PatientCreate, PatientPublic, PatientUpdate
+from src.services import patient_service
 
 patient_router = APIRouter(prefix="/patient")
 
@@ -18,7 +18,7 @@ async def create_patient(
     db: AsyncSession = Depends(get_db),
 ) -> PatientPublic:
     try:
-        patient: Patient = await patient_repo.create_patient(db, patient)
+        patient: Patient = await patient_service.create_patient(db, patient)
         return PatientPublic(**patient.__dict__)
     except Exception as e:
         raise HTTPException(status_code=500) from e
@@ -31,7 +31,7 @@ async def list_patients(
     offset: int = 0,
 ) -> list[PatientPublic]:
     try:
-        patients: list[Patient] = await patient_repo.list_patients(db, limit, offset)
+        patients: list[Patient] = await patient_service.list_patients(db, limit, offset)
         return [PatientPublic(**patient.__dict__) for patient in patients]
     except Exception as e:
         raise HTTPException(status_code=500) from e
@@ -42,7 +42,7 @@ async def get_patient(
     patient_id: int, db: AsyncSession = Depends(get_db)
 ) -> PatientPublic:
     try:
-        patient: Patient = await patient_repo.get_patient(db, patient_id)
+        patient: Patient = await patient_service.get_patient(db, patient_id)
         return PatientPublic(**patient.__dict__)
     except NotFoundError:
         raise HTTPException(status_code=404, detail="patient not found") from None
@@ -57,7 +57,7 @@ async def update_patient(
     db: AsyncSession = Depends(get_db),
 ) -> PatientPublic:
     try:
-        patient: Patient = await patient_repo.update_patient(db, patient_id, patient)
+        patient: Patient = await patient_service.update_patient(db, patient_id, patient)
         return PatientPublic(**patient.__dict__)
     except NotFoundError:
         raise HTTPException(status_code=404, detail="patient not found") from None
@@ -71,7 +71,7 @@ async def delete_patient(
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, str]:
     try:
-        await patient_repo.delete_patient(db, patient_id)
+        await patient_service.delete_patient(db, patient_id)
         return {"details": "patient deleted"}
     except NotFoundError:
         raise HTTPException(status_code=404, detail="patient not found") from None

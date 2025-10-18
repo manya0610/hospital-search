@@ -3,26 +3,25 @@ from collections.abc import Sequence
 
 from sqlalchemy import CursorResult, ScalarResult, delete, insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
+from torch import Tensor
 
 from src.database.models import Note
 from src.exceptions.db_exceptions import DatabaseError, NotFoundError
-from src.helper import get_embeddings
 from src.schemas.note_schema import NoteCreate, NoteUpdate
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-async def create_note(session: AsyncSession, data: NoteCreate) -> Note:
+async def create_note(session: AsyncSession, note: NoteCreate) -> Note:
     try:
-        data.embedding = get_embeddings(data.text)
-        query = insert(Note).values(data.model_dump()).returning(Note)
+        query = insert(Note).values(note.model_dump()).returning(Note)
         note: Note = await session.scalar(query)
         await session.commit()
         return note
     except Exception as e:
         await session.rollback()
-        logger.exception("Error creating note=%s", data, stack_info=True)
+        logger.exception("Error creating note=%s", note, stack_info=True)
         raise DatabaseError from e
 
 
@@ -47,11 +46,7 @@ async def get_note(session: AsyncSession, note_id: int) -> Note:
 
 
 # List all note, returning a list of Note objects
-async def list_notes(
-    session: AsyncSession,
-    limit: int = 100,
-    offset: int = 0,
-) -> list[Note]:
+async def list_notes(session: AsyncSession, limit: int, offset: int) -> list[Note]:
     try:
         query = select(Note).limit(limit).offset(offset)
         response: ScalarResult = await session.scalars(query)
@@ -62,12 +57,12 @@ async def list_notes(
         raise DatabaseError from e
 
 
-async def update_note(session: AsyncSession, note_id: int, data: NoteUpdate) -> Note:
+async def update_note(session: AsyncSession, note_id: int, note: NoteUpdate) -> Note:
     try:
         query = (
             update(Note)
             .where(Note.note_id == note_id)
-            .values(**data.model_dump())
+            .values(**note.model_dump())
             .returning(Note)
         )
         note: Note = await session.scalar(query)
@@ -83,7 +78,7 @@ async def update_note(session: AsyncSession, note_id: int, data: NoteUpdate) -> 
         logger.exception(
             "Error updating note with id=%s, data=%s",
             note_id,
-            data,
+            note,
             stack_info=True,
         )
         raise DatabaseError from e
@@ -107,10 +102,10 @@ async def delete_note(session: AsyncSession, note_id: int) -> int:
         raise DatabaseError from e
 
 
-async def search_notes(session: AsyncSession, text: str) -> list[tuple[Note, float]]:
+async def search_notes_by_text_vector(
+    session: AsyncSession, query_vector: Tensor
+) -> list[tuple[Note, float]]:
     try:
-        query_vector = get_embeddings(text)
-
         # Label the similarity score
         similarity_expr = (1 - Note.embedding.cosine_distance(query_vector)).label(
             "similarity_score"
