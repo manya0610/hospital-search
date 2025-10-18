@@ -25,9 +25,9 @@ class NoteUpdate(BaseModel):
     embedding: list[float] = None
 
 
-class NoteSearch(BaseModel):
-    model_config = ConfigDict(from_attributes=True, extra="forbid")
-    text: str
+# class NoteSearch(BaseModel):
+#     model_config = ConfigDict(from_attributes=True, extra="forbid")
+#     text: str
 
 
 class NoteSearchPublic(BaseModel):

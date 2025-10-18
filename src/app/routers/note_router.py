@@ -5,19 +5,17 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database import get_db
-from src.database.models import Note
 from src.exceptions.db_exceptions import NotFoundError
-from src.repo import note_repo
 from src.schemas.note_schema import (
     NoteCreate,
     NotePublic,
-    NoteSearch,
+    # NoteSearch,
     NoteSearchPublic,
     NoteUpdate,
 )
 from src.services import note_service
 
-note_router = APIRouter(prefix="/note")
+note_router = APIRouter(prefix="/notes")
 
 
 @note_router.post("")
@@ -38,8 +36,7 @@ async def list_notes(
     offset: int = 0,
 ) -> list[NotePublic]:
     try:
-        notes: list[Note] = await note_repo.list_notes(db, limit, offset)
-        return notes
+        return await note_service.list_notes(db, limit, offset)
     except Exception as e:
         raise HTTPException(status_code=500) from e
 
@@ -47,8 +44,7 @@ async def list_notes(
 @note_router.get("/{note_id}")
 async def get_note(note_id: int, db: AsyncSession = Depends(get_db)) -> NotePublic:
     try:
-        note: Note = await note_repo.get_note(db, note_id)
-        return note
+        return await note_service.get_note(db, note_id)
     except NotFoundError:
         raise HTTPException(status_code=404, detail="note not found") from None
     except Exception as e:
@@ -62,8 +58,7 @@ async def update_note(
     db: AsyncSession = Depends(get_db),
 ) -> NotePublic:
     try:
-        note: Note = await note_service.update_note(db, note_id, note)
-        return note
+        return await note_service.update_note(db, note_id, note)
     except NotFoundError:
         raise HTTPException(status_code=404, detail="note not found") from None
     except Exception as e:
@@ -76,7 +71,7 @@ async def delete_note(
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, str]:
     try:
-        await note_repo.delete_note(db, note_id)
+        await note_service.delete_note(db, note_id)
         return {"details": "note deleted"}
     except NotFoundError:
         raise HTTPException(status_code=404, detail="note not found") from None
@@ -84,12 +79,12 @@ async def delete_note(
         raise HTTPException(status_code=500) from e
 
 
-@note_router.post("/search")
+@note_router.get("/search_notes/")
 async def search(
-    search_note: NoteSearch, db: AsyncSession = Depends(get_db)
+    search_text: str, db: AsyncSession = Depends(get_db)
 ) -> list[NoteSearchPublic]:
     try:
-        return await note_service.search_notes_by_text(db, search_note)
+        return await note_service.search_notes_by_text(db, search_text)
     except NotFoundError:
         raise HTTPException(status_code=404, detail="note not found") from None
     except Exception as e:

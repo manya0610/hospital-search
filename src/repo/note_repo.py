@@ -103,7 +103,7 @@ async def delete_note(session: AsyncSession, note_id: int) -> int:
 
 
 async def search_notes_by_text_vector(
-    session: AsyncSession, query_vector: Tensor
+    session: AsyncSession, query_vector: Tensor,limit:int
 ) -> list[tuple[Note, float]]:
     try:
         # Label the similarity score
@@ -114,7 +114,7 @@ async def search_notes_by_text_vector(
         query = (
             select(Note, similarity_expr)
             .order_by(similarity_expr.desc())  # order by highest similarity
-            .limit(5)
+            .limit(limit)
         )
 
         response: ScalarResult = await session.execute(query)

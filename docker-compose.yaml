@@ -1,0 +1,37 @@
+services:
+
+  fastapi_server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./src:/app/src
+      - ./deploy:/app/deploy
+    ports:
+      - "8000:8080"
+    env_file:
+    - path: ./.env.docker.rc
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "1000M"
+
+    
+  postgres:
+    image: pgvector/pgvector:pg18
+    container_name: my_postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DATABASE: mydatabase
+      POSTGRES_DATA: /var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db-init-scripts:/docker-entrypoint-initdb.d
+
+volumes:
+  postgres_data:

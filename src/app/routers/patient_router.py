@@ -9,7 +9,7 @@ from src.exceptions.db_exceptions import NotFoundError
 from src.schemas.patient_schema import PatientCreate, PatientPublic, PatientUpdate
 from src.services import patient_service
 
-patient_router = APIRouter(prefix="/patient")
+patient_router = APIRouter(prefix="/patients")
 
 
 @patient_router.post("")

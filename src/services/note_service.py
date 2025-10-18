@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.models import Note
 from src.repo import note_repo
-from src.schemas.note_schema import NoteCreate, NoteSearch, NoteSearchPublic, NoteUpdate
+from src.schemas.note_schema import NoteCreate, NoteSearchPublic, NoteUpdate
 from src.services.embedding_model import get_embeddings
 
 
@@ -49,16 +49,16 @@ async def delete_note(db: AsyncSession, note_id: int) -> Note:
 
 
 async def search_notes_by_text(
-    db: AsyncSession, search_note: NoteSearch
+    db: AsyncSession, search_note: str, limit:int=3
 ) -> list[NoteSearchPublic]:
     """
     Semantic search over text
 
     Creates embedding from text and searches notes using that embedding.
     """
-    embedding = get_embeddings(search_note.text)
+    embedding = get_embeddings(search_note)
     notes: list[tuple[Note, float]] = await note_repo.search_notes_by_text_vector(
-        db, embedding
+        db, embedding,limit
     )
     # adding similarity score to NoteSearchPublic model,
     # because `note_repo.search_notes_by_text_vector` returns note with similarity score
