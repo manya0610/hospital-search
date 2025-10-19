@@ -14,5 +14,6 @@ dependencies = [
     "pytest-asyncio>=1.2.0",
     "ruff>=0.13.1",
     "sentence-transformers>=5.1.1",
+    "sqlalchemy-utils>=0.42.0",
     "sqlalchemy[asyncio]>=2.0.43",
 ]

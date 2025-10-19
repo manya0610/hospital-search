@@ -1,0 +1,53 @@
+{
+"patients": [
+    {
+        "name": "Manish",
+        "age": 26
+    },
+    {
+        "name": "Kunal",
+        "age": 35
+    },
+    {
+        "name": "Mona",
+        "age": 25
+    },
+    {
+        "name": "Chinu",
+        "age": 21
+    },
+    {
+        "name": "Achu",
+        "age": 23
+    }
+],
+
+
+"notes": [
+    {
+        "patient_id": 1,
+        "text": "Patient is very healthy with good amount of muscle"
+    },
+    {
+        "patient_id": 2,
+        "text": "She had high blood suger"
+    },
+    {
+        "patient_id": 3,
+        "text": "Patient has tuberculosis"
+    },
+    {
+        "patient_id": 4,
+        "text": "Patient has fever and back pain"
+    },
+    {
+        "patient_id": 5,
+        "text": "Patient has dental issues"
+    },
+    {
+        "patient_id": 3,
+        "text": "Patient has cold and cough"
+    }
+]
+
+}

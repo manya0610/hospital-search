@@ -8,7 +8,7 @@ class NoteCreate(BaseModel):
 
     patient_id: int
     text: str
-    embedding: list[float] | None = Field(default=None, exclude=True)
+    embedding: list[float] | None = []
 
 
 class NotePublic(BaseModel):
@@ -22,7 +22,7 @@ class NoteUpdate(BaseModel):
     model_config = ConfigDict(from_attributes=True, extra="forbid")
     patient_id: int | None = None
     text: str | None = None
-    embedding: list[float] | None = Field(default=None, exclude=True)
+    embedding: list[float] | None = []
 
 
 class NoteSearchPublic(BaseModel):
