@@ -12,6 +12,7 @@ with open("./dummy_data.json", "r") as f:
 
 
 async def seed_db():
+    print("seeding database")
     for patient in data["patients"]:
         async for db in get_db():
             await patient_service.create_patient(db, PatientCreate(**patient))
@@ -19,6 +20,8 @@ async def seed_db():
     for notes in data["notes"]:
         async for db in get_db():
             await note_service.create_note(db, NoteCreate(**notes))
+    
+    print("seeding finished")
 
 
 if __name__ == "__main__":

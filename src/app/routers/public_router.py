@@ -36,6 +36,8 @@ async def add_note(
 ) -> NotePublic:
     try:
         return await note_service.create_note(db, note)
+    except NotFoundError as e:
+        raise HTTPException(status_code=404, detail="patient with given patient_id not found") from None
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500) from e

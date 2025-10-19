@@ -7,6 +7,9 @@ services:
     volumes:
       - ./src:/app/src
       - ./deploy:/app/deploy
+      - ./create_db.py:/app/create_db.py
+      - ./seed_db.py:/app/seed_db.py
+      - ./dummy_data.json:/app/dummy_data.json
     ports:
       - "8000:8080"
     env_file:

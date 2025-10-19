@@ -42,4 +42,3 @@ if __name__ == "__main__":
         raise ValueError("DATABASE_URL environment variable not set.")
         
     asyncio.run(drop_and_create_async_db(DB_URL))
-    asyncio.run(seed_db())

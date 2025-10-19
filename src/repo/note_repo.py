@@ -22,6 +22,8 @@ async def create_note(session: AsyncSession, note: NoteCreate) -> Note:
     except Exception as e:
         await session.rollback()
         logger.exception("Error creating note=%s", note, stack_info=True)
+        if "foreign key constraint" in str(e):
+            raise NotFoundError("Patient not found") from e
         raise DatabaseError from e
 
 
