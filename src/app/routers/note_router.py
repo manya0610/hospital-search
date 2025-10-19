@@ -18,11 +18,36 @@ from src.services import note_service
 note_router = APIRouter(prefix="/notes")
 
 
+@note_router.get("/search_notes")
+async def search(
+    search_text: str, db: AsyncSession = Depends(get_db)
+) -> list[NoteSearchPublic]:
+    try:
+        return await note_service.search_notes_by_text(db, search_text)
+    except NotFoundError:
+        raise HTTPException(status_code=404, detail="note not found") from None
+    except Exception as e:
+        traceback.print_exc()
+        raise HTTPException(status_code=500) from e
+
+
+@note_router.post("/add_note")
+async def add_note(
+    note: NoteCreate,
+    db: AsyncSession = Depends(get_db),
+) -> NotePublic:
+    try:
+        return await note_service.create_note(db, note)
+    except Exception as e:
+        raise HTTPException(status_code=500) from e
+
+
 @note_router.post("")
 async def create_note(
     note: NoteCreate,
     db: AsyncSession = Depends(get_db),
 ) -> NotePublic:
+    # is a duplicate of add_note, keeping for consistency
     try:
         return await note_service.create_note(db, note)
     except Exception as e:
@@ -76,17 +101,4 @@ async def delete_note(
     except NotFoundError:
         raise HTTPException(status_code=404, detail="note not found") from None
     except Exception as e:
-        raise HTTPException(status_code=500) from e
-
-
-@note_router.get("/search_notes/")
-async def search(
-    search_text: str, db: AsyncSession = Depends(get_db)
-) -> list[NoteSearchPublic]:
-    try:
-        return await note_service.search_notes_by_text(db, search_text)
-    except NotFoundError:
-        raise HTTPException(status_code=404, detail="note not found") from None
-    except Exception as e:
-        traceback.print_exc()
         raise HTTPException(status_code=500) from e

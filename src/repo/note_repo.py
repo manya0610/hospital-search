@@ -103,7 +103,7 @@ async def delete_note(session: AsyncSession, note_id: int) -> int:
 
 
 async def search_notes_by_text_vector(
-    session: AsyncSession, query_vector: Tensor,limit:int
+    session: AsyncSession, query_vector: Tensor, limit: int
 ) -> list[tuple[Note, float]]:
     try:
         # Label the similarity score
