@@ -9,7 +9,6 @@ from src.exceptions.db_exceptions import NotFoundError
 from src.schemas.note_schema import (
     NoteCreate,
     NotePublic,
-    # NoteSearch,
     NoteSearchPublic,
     NoteUpdate,
 )

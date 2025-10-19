@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 # Load a pre-trained model (you can choose many others — see below)
 text_embedding_model = SentenceTransformer("multi-qa-MiniLM-L6-cos-v1")
+# text_embedding_model = None
 
 
 def get_embeddings(text: str) -> Tensor:

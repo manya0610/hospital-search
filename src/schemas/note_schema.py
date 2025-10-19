@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class NoteCreate(BaseModel):
@@ -8,7 +8,7 @@ class NoteCreate(BaseModel):
 
     patient_id: int
     text: str
-    embedding: Optional[list[float]] = []
+    embedding: list[float] | None = Field(default=None, exclude=True)
 
 
 class NotePublic(BaseModel):
@@ -22,12 +22,7 @@ class NoteUpdate(BaseModel):
     model_config = ConfigDict(from_attributes=True, extra="forbid")
     patient_id: int | None = None
     text: str | None = None
-    embedding: list[float] = None
-
-
-# class NoteSearch(BaseModel):
-#     model_config = ConfigDict(from_attributes=True, extra="forbid")
-#     text: str
+    embedding: list[float] | None = Field(default=None, exclude=True)
 
 
 class NoteSearchPublic(BaseModel):
