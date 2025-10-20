@@ -7,7 +7,7 @@ class NoteCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True, extra="forbid")
 
     patient_id: int
-    text: str
+    text: str = Field(min_length=3, max_length=1000)
     embedding: list[float] | None = []
 
 
@@ -21,7 +21,7 @@ class NotePublic(BaseModel):
 class NoteUpdate(BaseModel):
     model_config = ConfigDict(from_attributes=True, extra="forbid")
     patient_id: int | None = None
-    text: str | None = None
+    text: str | None = Field(default=None, min_length=3, max_length=1000)
     embedding: list[float] | None = []
 
 

@@ -88,4 +88,33 @@ Here are example curl requests, assuming db is seeded.
 
 
 
+# Design Decisions
+1. Database
+    I picked postgreSQL with pgvector extension. Reason being I'm familiar with postgres and it's a battle tested database
 
+2. Embedding model
+    I used SentenceTransformer("multi-qa-MiniLM-L6-cos-v1"), it was the suggested model for semantic search.
+    OpenAI or Ollama API would probably give better results because of bigger model with better vocabulary, but to keep things simple for this project, I decided to use an smaller open source model.
+
+3. DB Design
+    I have create a patients table and notes table, with notes table referencing patients.patient_id as foreign key to not allow notes for patients which don't exist, with `ONCASCADE DELETE` to avoid having redundant entries in db.
+    Have created a `ivfflat` Index on notes.embedding, for faster searching.
+
+4. Architecture patterns used
+    It's a simple client server application, to keep things simple. Tradeoff being, because we are calculating embedding on each note creation/updation/search, those operations are slower.
+
+# Project Metadata
+
+1. Estimated time spent on the task
+    About 6 hours. 
+    The MVP part of searching notes via embeddings was done in 2 hours, it was quite simple.
+    I spent about 1-2 hour for setting up unit tests, but async sqlalchemy give me headache.
+    Then I spend remaining time to dockerize whole project to start with just one command, and handing some edge cases.
+
+2. Bonus features
+    Docker Containerization, with Persistent Production Database. I have also added some seed values to database, can be removed easily if wanted. Couldn't add unit tests because of one issue.
+
+3. Known limitations
+    There might be some edge cases missing in CRUD for patients and notes.
+    I haven't tested note search on large scale data, not sure of it's performance.
+    

@@ -1,7 +1,6 @@
 import traceback
-from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database import get_db
@@ -18,7 +17,7 @@ public_router = APIRouter(prefix="")
 
 @public_router.get("/search_notes")
 async def search(
-    search_text: str, db: AsyncSession = Depends(get_db)
+    search_text: str = Query(min_length=3, max_length=1000), db: AsyncSession = Depends(get_db)
 ) -> list[NoteSearchPublic]:
     try:
         return await note_service.search_notes_by_text(db, search_text)
